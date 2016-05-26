@@ -151,6 +151,13 @@ def displayAllCustomerDetails():
         print("AccountBalance = ", (row[1]))
     print("Operation done successfully")
 
+def getFPTemplate(mobileNumber):
+    cursor = conn.execute("SELECT * from FPTemplatedb WHERE MobileNumber = ?",(mobileNumber,))
+    a = [1]
+    for row in cursor:
+        print("hi")
+        a.append(row)
+    return a
 
 def verifyMobileNumber(mobileNumber):
     try:
@@ -170,7 +177,7 @@ def verifyMobileNumber(mobileNumber):
 
 #createtables()
 #conn.execute('.schema LOGS')
-# conn.execute('.tables')
+# conn.execute('tables')
 #print(trans("7790844870",102,'+',1001))
 # registerUser("7790844870",500, 1001)
 # registerVendor(1001,"Tuck Shop", 0)
@@ -178,5 +185,5 @@ def verifyMobileNumber(mobileNumber):
 #print(getbal("7790844870"))
 #displayAllCustomerDetails()
 #print((getLastTransactions("7790844870")))
-
+#print(getFPTemplate("7790844870"))
 # print(verifyMobileNumber("7790844870"))
