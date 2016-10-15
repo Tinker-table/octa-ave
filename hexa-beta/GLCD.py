@@ -180,7 +180,7 @@ class LCD12864(object):
         currentScreen = 1
         self.driver.lcd_byte(0x3F,0)
 
-driver = LCD_GPIO(RS=25,RW=7,E1=21,E2=22,D0=5,D1=6,D2=13,D3=19,D4=26,D5=12,D6=16,D7=20,CS1=24,CS2=23,RST=18)
+driver = LCD_GPIO(RS=4,RW=17,E1=27,E2=7,D0=22,D1=10,D2=9,D3=11,D4=5,D5=6,D6=13,D7=19,CS1=26,CS2=21,RST=20)
 lcd = LCD12864(driver=driver)
 
 def getHexCode(string):

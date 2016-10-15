@@ -33,13 +33,13 @@ kb = kbh.KBHit()
 
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(17, GPIO.IN, pull_up_down = GPIO.PUD_UP) # register
-GPIO.setup(10, GPIO.IN, pull_up_down = GPIO.PUD_UP) # recharge
-GPIO.setup(27, GPIO.IN, pull_up_down = GPIO.PUD_UP) # payment
-GPIO.setup(9, GPIO.IN, pull_up_down = GPIO.PUD_UP) # back
-GPIO.setup(4, GPIO.IN, pull_up_down = GPIO.PUD_UP) # FPS Interrupt
-GPIO.setup(8,GPIO.OUT) #buzzer
-GPIO.setup(11,GPIO.OUT) #red
+GPIO.setup(23, GPIO.IN, pull_up_down = GPIO.PUD_UP) # register
+GPIO.setup(24, GPIO.IN, pull_up_down = GPIO.PUD_UP) # recharge
+GPIO.setup(25, GPIO.IN, pull_up_down = GPIO.PUD_UP) # payment
+GPIO.setup(8, GPIO.IN, pull_up_down = GPIO.PUD_UP) # back
+GPIO.setup(18, GPIO.IN, pull_up_down = GPIO.PUD_UP) # FPS Interrupt
+GPIO.setup(12,GPIO.OUT) #buzzer # now green
+GPIO.setup(16,GPIO.OUT) #red
 
 ids.state10()
 
