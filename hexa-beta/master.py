@@ -46,7 +46,7 @@ def blink():
     global flagtime
     flagtime = time.time()
     while True:
-        if kb.kbhit() or GPIO.input(4) == 0 or GPIO.input(9) == 0 or GPIO.input(27) == 0 or GPIO.input(10) == 0 or GPIO.input(17) == 0:
+        if kb.kbhit() or GPIO.input(GIO_fps) == 0 or GPIO.input(GIO_back) == 0 or GPIO.input(GIO_pay) == 0 or GPIO.input(GIO_rech) == 0 or GPIO.input(GIO_reg) == 0:
             break
         else:
             GPIO.output(8,True)
@@ -59,6 +59,13 @@ def blink():
                 flagtime = time.time()
 
 try:
+    GIO_reg = 23
+    GIO_rech = 24
+    GIO_pay = 25
+    GIO_back = 8
+    GIO_fps = 18
+    GIO_green = 12
+    GIO_red = 16
     keyclock = 0
     keypress = 0
     fps.autoIdentifyStop()
@@ -81,20 +88,20 @@ try:
 
 
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(23, GPIO.IN, pull_up_down = GPIO.PUD_UP) # register
-    GPIO.setup(24, GPIO.IN, pull_up_down = GPIO.PUD_UP) # recharge
-    GPIO.setup(25, GPIO.IN, pull_up_down = GPIO.PUD_UP) # payment
-    GPIO.setup(8, GPIO.IN, pull_up_down = GPIO.PUD_UP) # back
-    GPIO.setup(18, GPIO.IN, pull_up_down = GPIO.PUD_UP) # FPS Interrupt
-    GPIO.setup(12,GPIO.OUT) #buzzer # now green
-    GPIO.setup(16,GPIO.OUT) #red
+    GPIO.setup(GIO_reg, GPIO.IN, pull_up_down = GPIO.PUD_UP) # register
+    GPIO.setup(GIO_rech, GPIO.IN, pull_up_down = GPIO.PUD_UP) # recharge
+    GPIO.setup(GIO_pay, GPIO.IN, pull_up_down = GPIO.PUD_UP) # payment
+    GPIO.setup(GIO_back, GPIO.IN, pull_up_down = GPIO.PUD_UP) # back
+    GPIO.setup(GIO_fps, GPIO.IN, pull_up_down = GPIO.PUD_UP) # FPS Interrupt
+    GPIO.setup(GIO_green,GPIO.OUT) #buzzer # now green
+    GPIO.setup(GIO_red,GPIO.OUT) #red
 
     ids.state10()
 
 
     while True:
         global state
-        if GPIO.input(4) == 0:
+        if GPIO.input(GIO_fps) == 0:
             if state == 0 or state == 5:
                 miniStatementmode()
             elif state == 4:
@@ -112,7 +119,7 @@ try:
                     print ("FPS not found")
                     mss.state21()
                 while True:
-                    if GPIO.input(4) == 1:
+                    if GPIO.input(GIO_fps) == 1:
                         break
                 ids.state10()
                 state = 0
@@ -146,7 +153,7 @@ try:
                             ps.state20(amount)
                             fps.autoIdentifyStart()
                             while True:
-                                if GPIO.input(4) == 0:
+                                if GPIO.input(GIO_fps) == 0:
                                     print("fps interrupt in payment mode")
                                     ps.state30()
                                     fres = fps.identify()
@@ -158,7 +165,7 @@ try:
                                         elif transr[0] == 2:
                                             ps.state31(str(amount))
                                             while True:
-                                                if GPIO.input(4) == 1:
+                                                if GPIO.input(GIO_fps) == 1:
                                                     break
                                             fps.autoIdentifyStart()
                                         else:
@@ -167,9 +174,9 @@ try:
                                     else:
                                         ps.state31(str(amount))
                                         while True:
-                                            if GPIO.input(4) == 1:
+                                            if GPIO.input(GIO_fps) == 1:
                                                 break
-                                elif GPIO.input(9) == 0:
+                                elif GPIO.input(GIO_back) == 0:
                                     ids.state10()
                                     break
                             state = 5
@@ -196,7 +203,7 @@ try:
                             rs.state20(amount)
                             fps.autoIdentifyStart()
                             while True:
-                                if GPIO.input(4) == 0:
+                                if GPIO.input(GIO_fps) == 0:
                                     print("fps interrupt in recharge mode")
                                     rs.state30()
                                     fres = fps.identify()
@@ -211,15 +218,15 @@ try:
                                         else:
                                             rs.state31(amount) # "fatal" exeption to be handled
                                             while True:
-                                                if GPIO.input(4) == 1:
+                                                if GPIO.input(GIO_fps) == 1:
                                                     break
                                             fps.autoIdentifyStart()
                                     else:
                                         rs.state31(amount)
                                         while True:
-                                            if GPIO.input(4) == 1:
+                                            if GPIO.input(GIO_fps) == 1:
                                                 break
-                                elif GPIO.input(9) == 0:
+                                elif GPIO.input(GIO_back) == 0:
                                     ids.state10()
                                     break
                             state = 5
@@ -257,17 +264,17 @@ try:
                                             fps.autoIdentifyStart()
                                         if urs.currentState != 100:
                                             urs.state100()
-                                        if GPIO.input(4) == 0:
+                                        if GPIO.input(GIO_fps) == 0:
                                             if fps.identify()[0] == 0:
                                                 fps.autoIdentifyStop()
                                                 if fps.doubleRegistration()[0] == 1:
                                                     if fps.initiateRegistration(mobileNumber)[0] == 1:
                                                         urs.state101()
                                                         while True:
-                                                            if GPIO.input(4) == 1:
+                                                            if GPIO.input(GIO_fps) == 1:
                                                                 break
                                                         while True:
-                                                            if GPIO.input(4) == 0:
+                                                            if GPIO.input(GIO_fps) == 0:
                                                                 break
                                                         if fps.terminateRegistration()[0] == 1:
                                                             urs.state50()
@@ -288,7 +295,7 @@ try:
                                                     print("double registration ack failed")
                                             else:
                                                 print("poda panni")
-                                        elif GPIO.input(9) == 0:
+                                        elif GPIO.input(GIO_back) == 0:
                                             ids.state10()
                                             state = 0
                                             mss.currentState = 0
@@ -320,22 +327,22 @@ try:
 
 
 
-        elif GPIO.input(17) == 0:
+        elif GPIO.input(GIO_reg) == 0:
             if state == 0 or state == 5:
                 registermode()
 
 
-        elif GPIO.input(10) == 0:
+        elif GPIO.input(GIO_rech) == 0:
             if state == 0 or state == 5:
                 rechargemode()
 
 
-        elif GPIO.input(27) == 0:
+        elif GPIO.input(GIO_pay) == 0:
             if state == 0 or state == 5:
                 paymentmode()
 
 
-        elif GPIO.input(9) == 0:
+        elif GPIO.input(GIO_back) == 0:
             print('back')
             if state == 1:
                 if urs.currentState == 40:
