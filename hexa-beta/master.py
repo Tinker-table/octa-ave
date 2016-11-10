@@ -388,6 +388,6 @@ try:
 
 finally:
     database.conn.close()
-    database.cursor.close()
+    #database.cursor.close()
     GPIO.cleanup()
     fps.serialport.close()
