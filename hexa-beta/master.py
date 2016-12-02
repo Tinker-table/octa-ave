@@ -6,12 +6,8 @@ import miniStatementScreen as mss
 import rechargeScreen as rs
 import paymentScreen as ps
 import userRegistrationScreen as urs
-<<<<<<< HEAD
 #import kbh
-=======
 import messageScreen as ms
-import kbh
->>>>>>> 88d2df97f74c99467e284e6679a2892c78e39841
 import time
 import binascii
 import evdev
