@@ -91,7 +91,7 @@ def terminateRegistration():
         return (0,str[20:22])
 
 
-#0x19 command for including 2nd finger
+#0x19 command for including 2nd finger --- One time allow two different fingerprints during registration
 def doubleRegistration():
     data = dataCompiler('00','19','00','00','00','00','00','00','00','00','00')
     fpsTransmitter(data)
