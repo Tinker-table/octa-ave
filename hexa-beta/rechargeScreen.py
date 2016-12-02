@@ -125,7 +125,7 @@ def state31(amount):
 
 
 
-def state40(rechargeAmount,newBalance):
+def state40(rechargeAmount,newBalance,mobileNumber):
     global currentState
     currentState = 40
     #vendor Screen
@@ -140,7 +140,9 @@ def state40(rechargeAmount,newBalance):
     string = ("{:<%d}" % lineLength).format("Rs.")
     g.displayText(string,5,0,0)
     g.displayText(newBalance,5,(3*fontWidth-1),0)
-
+    string = ("{:^%d}" % lineLength).format("Mb.no:")
+    g.displayText(string,6,0,0)
+    g.displayText(mobileNumber,6,(6*fontWidth-1),0)
     #user Screen
     g.clearDisplay(1)
     string = ("{:^%d}" % lineLength).format("Recharge Successful")
@@ -149,8 +151,10 @@ def state40(rechargeAmount,newBalance):
     g.displayText(string,3,0,1)
     g.displayText(rechargeAmount,3,(3*fontWidth-1),1)
     string = ("{:^%d}" % lineLength).format("Your Current Balance")
-    g.displayText(string,4,0,0)
+    g.displayText(string,4,0,1)
     string = ("{:<%d}" % lineLength).format("Rs.")
-    g.displayText(string,5,0,0)
+    g.displayText(string,5,0,1)
     g.displayText(newBalance,5,(3*fontWidth-1),0)
-
+    string = ("{:^%d}" % lineLength).format("Mb.no:")
+    g.displayText(string,6,0,1)
+    g.displayText(mobileNumber,6,(6*fontWidth-1),1)
