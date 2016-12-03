@@ -180,19 +180,19 @@ def state50():
 
 
 def state60(accountBalance = " "):
-    # if currentState == 60:
-    #     s60num(accountBalance)
-    #     return
+    if currentState == 60:
+        s60num(accountBalance)
+        return
     global currentState
     currentState = 60
     #vendor Screen
-    g.clearDisplay(0)
-    string = ("{:^%d}" % lineLength).format("Deposit Amount")
-    g.displayText(string,2,0,0)
-    string = ("{:<%d}" % lineLength).format("Rs.")
-    g.displayText(string,4,0,0)
-    string = "{:<4}".format(accountBalance)
-    g.displayText(string,4,(3*fontWidth-1),0)
+    # g.clearDisplay(0)
+    # string = ("{:^%d}" % lineLength).format("Deposit Amount")
+    # g.displayText(string,2,0,0)
+    # string = ("{:<%d}" % lineLength).format("Rs.")
+    # g.displayText(string,4,0,0)
+    # string = "{:<4}".format(accountBalance)
+    # g.displayText(string,4,(3*fontWidth-1),0)
 
     #User Screen
     g.clearDisplay(1)
@@ -204,14 +204,14 @@ def state60(accountBalance = " "):
     g.displayText(string,4,(14*fontWidth-1),1)
 
 
-# def s60num(accountBalance):
+def s60num(accountBalance):
 #     # vendor Screen
 #     string = "{:<4}".format(accountBalance)
 #     g.displayText(string, 4, (3 * fontWidth - 1), 0)
 
-#     # User Screen
-#     string = "{:<4}".format(accountBalance)
-#     g.displayText(string, 4, (14 * fontWidth - 1), 1)
+    # User Screen
+    string = "{:<4}".format(accountBalance)
+    g.displayText(string, 4, (14 * fontWidth - 1), 1)
 
 
 
