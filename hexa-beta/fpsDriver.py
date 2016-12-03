@@ -15,6 +15,7 @@ autoid = 0
 def fpsTransmitter(data):
     question =  binascii.unhexlify(data)
     print("string trans >",data)
+    serialport.flush()    
     serialport.write(question)
 
 def fpsReceiver():

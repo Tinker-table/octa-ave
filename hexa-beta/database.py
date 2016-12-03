@@ -175,6 +175,34 @@ def verifyMobileNumber(mobileNumber):
             print("unexpected behavior")
 
 
+def cleardb():
+    print('Warning!!! this will clear all your data... \n please make a backup... \n\n \n please type "7345 DB Clear" to continue... ')
+    if input() == '7345 DB Clear':
+        print('clearing DB Now...')
+        cursor = conn.execute("truncate table CustomerDetails")
+        cursor = conn.execute("truncate table TransactionLogs")
+        cursor = conn.execute("truncate table VendorLogs")
+        cursor = conn.execute("truncate table VendorDetails")
+        cursor = conn.execute("truncate table VendingUserDetails")
+        cursor = conn.execute("truncate table FPTemplatedb")
+        if (os.path.isfile("transid.dat")):
+            fo = open("transid.dat", "rb+")
+            tid = 0
+            fo.truncate()
+            fo.write(bytes(str(tid), 'UTF-8'))
+        else:
+            fo = open("transid.dat", "ab")
+            tid = 0
+            fo.write(bytes(str(tid), 'UTF-8'))
+        fo.close()
+
+        print('all clear...')
+    else:
+        print('no action taken...')
+        return
+
+
+
 #createtables()
 #conn.execute('.schema LOGS')
 # conn.execute('tables')
