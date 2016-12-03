@@ -192,7 +192,7 @@ def state60(accountBalance = " "):
     string = ("{:<%d}" % lineLength).format("Rs.")
     g.displayText(string,4,0,0)
     string = "{:<4}".format(accountBalance)
-    g.displayText(string,5,(3*fontWidth-1),0)
+    g.displayText(string,4,(3*fontWidth-1),0)
 
     #User Screen
     g.clearDisplay(1)
@@ -201,17 +201,17 @@ def state60(accountBalance = " "):
     string = ("{:<%d}" % lineLength).format("To Deposit Rs.")
     g.displayText(string,4,0,1)
     string = "{:<4}".format(accountBalance)
-    g.displayText(string,5,(14*fontWidth-1),1)
+    g.displayText(string,4,(14*fontWidth-1),1)
 
 
 # def s60num(accountBalance):
 #     # vendor Screen
 #     string = "{:<4}".format(accountBalance)
-#     g.displayText(string, 5, (3 * fontWidth - 1), 0)
+#     g.displayText(string, 4, (3 * fontWidth - 1), 0)
 
 #     # User Screen
 #     string = "{:<4}".format(accountBalance)
-#     g.displayText(string, 5, (14 * fontWidth - 1), 1)
+#     g.displayText(string, 4, (14 * fontWidth - 1), 1)
 
 
 
