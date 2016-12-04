@@ -16,10 +16,10 @@ lineLength = 21
 
 
 def state10(paymentAmount = " "):
+    global currentState
     if currentState == 10:
         num(paymentAmount)
         return
-    global currentState
     currentState = 10
     #vendor Screen
     g.clearDisplay(0)

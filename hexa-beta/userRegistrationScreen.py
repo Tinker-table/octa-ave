@@ -22,10 +22,10 @@ lineLength = 21
 
 
 def state40(phoneNumber = ' '):
+    global currentState
     if currentState == 40:
         num(phoneNumber)
         return
-    global currentState
     currentState = 40
     #vendor Screen
     g.clearDisplay(0)
@@ -180,10 +180,10 @@ def state50():
 
 
 def state60(accountBalance = " "):
+    global currentState
     if currentState == 60:
         s60num(accountBalance)
         return
-    global currentState
     currentState = 60
     #vendor Screen
     # g.clearDisplay(0)

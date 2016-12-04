@@ -179,12 +179,12 @@ def cleardb():
     print('Warning!!! this will clear all your data... \n please make a backup... \n\n \n please type "7345 DB Clear" to continue... ')
     if input() == '7345 DB Clear':
         print('clearing DB Now...')
-        cursor = conn.execute("truncate table CustomerDetails")
-        cursor = conn.execute("truncate table TransactionLogs")
-        cursor = conn.execute("truncate table VendorLogs")
-        cursor = conn.execute("truncate table VendorDetails")
-        cursor = conn.execute("truncate table VendingUserDetails")
-        cursor = conn.execute("truncate table FPTemplatedb")
+        cursor = conn.execute("DELETE FROM CustomerDetails")
+        cursor = conn.execute("DELETE FROM TransactionLogs")
+        cursor = conn.execute("DELETE FROM VendorLogs")
+        cursor = conn.execute("DELETE FROM VendorDetails")
+        cursor = conn.execute("DELETE FROM VendingUserDetails")
+        cursor = conn.execute("DELETE FROM FPTemplatedb")
         if (os.path.isfile("transid.dat")):
             fo = open("transid.dat", "rb+")
             tid = 0
