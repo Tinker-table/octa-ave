@@ -97,7 +97,7 @@ def state101():
     g.displayText(string,0,0,0)
     string = ("{:^%d}" % lineLength).format("Waiting for ")
     g.displayText(string,3,0,0)
-    string = ("{:^%d}" % lineLength).format("2nd Finger")
+    string = ("{:^%d}" % lineLength).format("the finger again")
     g.displayText(string, 6, 0, 0)
 
     #User Screen
@@ -106,9 +106,10 @@ def state101():
     g.displayText(string,0,0,1)
     string = ("{:^%d}" % lineLength).format("Pls Remove ur Finger")
     g.displayText(string,3,0,1)
-    string = ("{:^%d}" % lineLength).format("And Place 2nd Finger")
+    string = ("{:^%d}" % lineLength).format("Place the same Finger")
     g.displayText(string,5,0,1)
-
+    string = ("{:^%d}" % lineLength).format("Again")
+    g.displayText(string,6,0,1)
 
 def state20():
     global currentState
