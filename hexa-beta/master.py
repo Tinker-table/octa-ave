@@ -198,7 +198,7 @@ try:
                             amount = ""
                             mobileNumber = ""
                             screenTime = time.time() + 5
-                        elif ord(x) == 13 or ord(x) == 10:
+                        elif (ord(x) == 13 or ord(x) == 10) and len(amount) > 0:
                             ps.state20(amount)
                             fps.autoIdentifyStart()
                             while True:
@@ -260,7 +260,7 @@ try:
                             amount = ""
                             mobileNumber = ""
                             screenTime = time.time() + 5
-                        elif ord(x) == 13 or ord(x) == 10:
+                        elif (ord(x) == 13 or ord(x) == 10) and len(amount) > 0:
                             rs.state20(amount)
                             fps.autoIdentifyStart()
                             while True:
@@ -391,6 +391,7 @@ try:
                                                 urs.currentState = 0
                                                 amount = ""
                                                 mobileNumber = ""
+                                                break
                                         elif GPIO.input(GIO_back) == 0:
                                             ids.state10()
                                             state = 0
