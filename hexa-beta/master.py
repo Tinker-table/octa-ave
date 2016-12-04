@@ -169,8 +169,8 @@ try:
 
         if kbhit():
             x = kcode[key]
-            print(key,ord(x),keypress)
-            if keypress == 0:    
+            print(key, ord(x), keypress)
+            if keypress == 0:
                 keypress = 1
                 keyclock = time.time()
                 print ("state > ", state)
@@ -191,7 +191,7 @@ try:
                             alen = len(amount)
                             amount = amount[0:alen - 1]
                             ps.state10(amount)
-                        elif kcode[key] == "-":
+                        elif x == "-":
                             ids.state10()
                             state = 5
                             ps.currentState = 0
@@ -210,7 +210,7 @@ try:
                                         fps.autoIdentifyStop()
                                         transr = database.trans(fres[1], int(amount), '-', 1001)
                                         if transr[0] == 1:
-                                            ps.state40(str(amount),str(fres[1]))
+                                            ps.state40(str(amount), str(fres[1]))
                                         elif transr[0] == 2:
                                             ps.state31(str(amount))
                                             while True:
@@ -229,7 +229,7 @@ try:
                                     ids.state10()
                                     break
                                 elif kbhit():
-                                    if ord(kcode[key]) == 127:  # backspace
+                                    if kcode[key] == '-':  # back
                                         ids.state10()
                                         break
 
@@ -253,7 +253,7 @@ try:
                             alen = len(amount)
                             amount = amount[0:alen - 1]
                             rs.state10(amount)
-                        elif kcode[key] == "-":
+                        elif x == "-":
                             ids.state10()
                             state = 5
                             rs.currentState = 0
@@ -274,7 +274,7 @@ try:
                                         transr = database.trans(fres[1], int(amount), '+', 1001)
                                         print ("transr >>", transr)
                                         if transr[0] == 1:
-                                            rs.state40(str(amount), str(transr[1]),str(fres[1]))
+                                            rs.state40(str(amount), str(transr[1]), str(fres[1]))
                                             break
                                         else:
                                             rs.state31(amount) # "fatal" exeption to be handled
@@ -291,7 +291,7 @@ try:
                                     ids.state10()
                                     break
                                 elif kbhit():
-                                    if ord(kcode[key]) == 127:  # backspace
+                                    if kcode[key] == '-':  # back
                                         ids.state10()
                                         break
                             state = 5
@@ -313,13 +313,13 @@ try:
                             mobileNumber += x
                             print("is digit>>", len(mobileNumber))
                             urs.state40(mobileNumber)
-                        elif ord(kcode[key]) == 127: # backspace
+                        elif ord(x) == 127: # backspace
                             print("backspace start>>", len(mobileNumber))
                             mlen = len(mobileNumber)
                             mobileNumber = mobileNumber[0:mlen-1]
                             print("backspace end>>", len(mobileNumber))
                             urs.state40(mobileNumber)
-                        elif kcode[key] == "-":
+                        elif x == "-":
                             ids.state10()
                             state = 0
                             urs.currentState = 0
@@ -359,6 +359,7 @@ try:
                                                                 tempOne =  binascii.unhexlify(tempdata[1])
                                                                 tempTwo =  binascii.unhexlify(tempdata[2])
                                                                 database.storeTemplate(mobileNumber, tempOne, tempTwo)
+                                                                database.registerUser (mobileNumber, 1001, 0)
                                                                 urs.state60()
                                                                 break
                                                             else:
@@ -371,7 +372,7 @@ try:
                                                     print("double registration ack failed")
                                             else:
                                                 print("poda panni")
-                                        elif GPIO.input(GIO_back) == 0 or (kcode[key] == "-" and kbhit()):
+                                        elif GPIO.input(GIO_back) == 0:
                                             ids.state10()
                                             state = 0
                                             urs.currentState = 0
@@ -379,6 +380,16 @@ try:
                                             mobileNumber = ""
                                             fps.autoIdentifyStop()
                                             break
+                                        elif kbhit():
+                                            if kcode[key] == '-':
+                                                ids.state10()
+                                                state = 0
+                                                urs.currentState = 0
+                                                amount = ""
+                                                mobileNumber = ""
+                                                fps.autoIdentifyStop()
+                                                break
+
 
 
                     if urs.currentState == 61:
@@ -389,12 +400,23 @@ try:
                         if x.isdigit() and len(amount) < 4:
                             amount += x
                             urs.state60(amount)
-                        elif ord(kcode[key]) == 127:  # backspace
+                        elif ord(x) == 127:  # backspace
                             amount = amount[0:len(amount) - 1]
                             urs.state60(amount)
+                        elif x == "-":
+                            urs.state70(mobileNumber, str(database.getbal(mobileNumber)))
+                            urs.currentState = 0
+                            amount = ""
+                            mobileNumber = ""
+                            state = 5
+                            screenTime = time.time()
                         elif (ord(x) == 13 or ord(x) == 10) and len(amount) > 0:
-                            database.registerUser (mobileNumber, 1001, int(amount)) # add money to account
-                            urs.state70(mobileNumber, str(database.getbal(mobileNumber)))  # parameters should be from database
+                            transr = database.trans(mobileNumber, int(amount), '+', 1001) # add money to account
+                            print ("transr >>", transr)
+                            if transr[0] == 1:
+                                urs.state70(mobileNumber, str(database.getbal(mobileNumber)))  # parameters should be from database
+                            else: # this state is not supposed to happen
+                                print('unexpected DB error')
                             urs.currentState = 0
                             amount = ""
                             mobileNumber = ""
