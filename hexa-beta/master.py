@@ -214,15 +214,16 @@ try:
                                         transr = database.trans(fres[1], int(amount), '-', 1001)
                                         if transr[0] == 1:
                                             ps.state40(str(amount), str(fres[1]))
+                                            break
                                         elif transr[0] == 2:
                                             ps.state31(str(amount))
                                             while True:
                                                 if GPIO.input(GIO_fps) == 1:
                                                     break
                                             fps.autoIdentifyStart()
-                                        else:
+                                        elif transr[0] == 0:
                                             ps.state32(str(transr[1]))
-                                        break
+                                            break
                                     else:
                                         ps.state31(str(amount))
                                         while True:

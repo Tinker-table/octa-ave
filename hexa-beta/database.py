@@ -70,7 +70,7 @@ def registerUser (MobileNumber, VendorId, AccountBalance = 0):
     conn.commit()
     print("Records created successfully")
 
-def trans(MobileNumber,Amount,TransactionType, VendorId):
+def trans(MobileNumber, Amount, TransactionType, VendorId):
     if verifyMobileNumber(MobileNumber)[0] == 1:
         return 2, 0  # account not found in db
     currentBalance=getbal(MobileNumber)
