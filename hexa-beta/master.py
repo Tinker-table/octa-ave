@@ -181,6 +181,8 @@ try:
                         rechargemode()
                     elif x == '3':
                         paymentmode()
+                    elif x == '-' or ord(x) == 13:
+                        screenTime += 5
                 elif state == 3:
                     print("3")
                     if ps.currentState == 10:
