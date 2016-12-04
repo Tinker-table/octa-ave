@@ -60,8 +60,10 @@ def blink():
                 GPIO.output(11,False)
                 flagtime = time.time()
 
+kptime = 0
 def kbhit():
     global key
+    global kptime
     try:
         # keypress = 1
         for event in device.read():
