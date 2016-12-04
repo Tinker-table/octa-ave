@@ -191,6 +191,13 @@ try:
                             alen = len(amount)
                             amount = amount[0:alen - 1]
                             ps.state10(amount)
+                        elif kcode[key] == "-":
+                            ids.state10()
+                            state = 5
+                            ps.currentState = 0
+                            amount = ""
+                            mobileNumber = ""
+                            screenTime = time.time() + 5
                         elif ord(x) == 13 or ord(x) == 10:
                             ps.state20(amount)
                             fps.autoIdentifyStart()
@@ -221,6 +228,11 @@ try:
                                 elif GPIO.input(GIO_back) == 0:
                                     ids.state10()
                                     break
+                                elif kbhit():
+                                    if ord(x) == 127:  # backspace
+                                        ids.state10()
+                                        break
+
                             state = 5
                             ps.currentState = 0
                             amount = ""
@@ -241,6 +253,13 @@ try:
                             alen = len(amount)
                             amount = amount[0:alen - 1]
                             rs.state10(amount)
+                        elif kcode[key] == "-":
+                            ids.state10()
+                            state = 5
+                            rs.currentState = 0
+                            amount = ""
+                            mobileNumber = ""
+                            screenTime = time.time() + 5
                         elif ord(x) == 13 or ord(x) == 10:
                             rs.state20(amount)
                             fps.autoIdentifyStart()
@@ -271,6 +290,10 @@ try:
                                 elif GPIO.input(GIO_back) == 0:
                                     ids.state10()
                                     break
+                                elif kbhit():
+                                    if ord(x) == 127:  # backspace
+                                        ids.state10()
+                                        break
                             state = 5
                             rs.currentState = 0
                             amount = ""
@@ -296,6 +319,13 @@ try:
                             mobileNumber = mobileNumber[0:mlen-1]
                             print("backspace end>>", len(mobileNumber))
                             urs.state40(mobileNumber)
+                        elif kcode[key] == "-":
+                            ids.state10()
+                            state = 0
+                            urs.currentState = 0
+                            amount = ""
+                            mobileNumber = ""
+
                         elif ord(x) == 13 or ord(x) == 10:
                             if len(mobileNumber) == 10:
                                 if database.verifyMobileNumber(mobileNumber)[0] == 0:#.........number alerady exists
@@ -318,6 +348,10 @@ try:
                                                         while True:
                                                             if GPIO.input(GIO_fps) == 0:
                                                                 break
+                                                            # elif kbhit():
+                                                            #     if ord(x) == 127:  # backspace
+                                                            #         ids.state10()
+                                                                    
                                                         if fps.terminateRegistration()[0] == 1:
                                                             urs.state50()
                                                             tempdata = fps.getTemplateGenerator(mobileNumber)
@@ -337,10 +371,10 @@ try:
                                                     print("double registration ack failed")
                                             else:
                                                 print("poda panni")
-                                        elif GPIO.input(GIO_back) == 0:
+                                        elif GPIO.input(GIO_back) == 0 or (kcode[key] == "-" and kbhit()):
                                             ids.state10()
                                             state = 0
-                                            mss.currentState = 0
+                                            urs.currentState = 0
                                             amount = ""
                                             mobileNumber = ""
                                             fps.autoIdentifyStop()
