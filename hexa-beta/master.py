@@ -72,7 +72,7 @@ def kbhit():
                     kptime = event.timestamp()
     except BlockingIOError:
         continue
-    return time.time() - kptime < 0.05:
+    return time.time() - kptime < 0.05
 
 state = 0
 key = 0
