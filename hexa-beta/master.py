@@ -229,7 +229,7 @@ try:
                                     ids.state10()
                                     break
                                 elif kbhit():
-                                    if ord(x) == 127:  # backspace
+                                    if ord(kcode[key]) == 127:  # backspace
                                         ids.state10()
                                         break
 
@@ -291,7 +291,7 @@ try:
                                     ids.state10()
                                     break
                                 elif kbhit():
-                                    if ord(x) == 127:  # backspace
+                                    if ord(kcode[key]) == 127:  # backspace
                                         ids.state10()
                                         break
                             state = 5
@@ -313,7 +313,7 @@ try:
                             mobileNumber += x
                             print("is digit>>", len(mobileNumber))
                             urs.state40(mobileNumber)
-                        elif ord(x) == 127: # backspace
+                        elif ord(kcode[key]) == 127: # backspace
                             print("backspace start>>", len(mobileNumber))
                             mlen = len(mobileNumber)
                             mobileNumber = mobileNumber[0:mlen-1]
@@ -389,7 +389,7 @@ try:
                         if x.isdigit() and len(amount) < 4:
                             amount += x
                             urs.state60(amount)
-                        elif ord(x) == 127:  # backspace
+                        elif ord(kcode[key]) == 127:  # backspace
                             amount = amount[0:len(amount) - 1]
                             urs.state60(amount)
                         elif (ord(x) == 13 or ord(x) == 10) and len(amount) > 0:
