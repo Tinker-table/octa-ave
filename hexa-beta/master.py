@@ -75,6 +75,11 @@ def kbhit():
     except BlockingIOError:
         return time.time() - kptime < 0.05
 
+def fingerRemoved():
+    while True:
+        if GPIO.input(GIO_fps) == 1:
+            return True
+
 state = 0
 key = 0
 try:
@@ -214,21 +219,21 @@ try:
                                         transr = database.trans(fres[1], int(amount), '-', 1001)
                                         if transr[0] == 1:
                                             ps.state40(str(amount), str(fres[1]))
-                                            break
+                                            if fingerRemoved():
+                                                break
                                         elif transr[0] == 2:
                                             ps.state31(str(amount))
-                                            while True:
-                                                if GPIO.input(GIO_fps) == 1:
-                                                    break
+                                            if fingerRemoved():
+                                                pass
                                             fps.autoIdentifyStart()
                                         elif transr[0] == 0:
                                             ps.state32(str(transr[1]))
-                                            break
+                                            if fingerRemoved():
+                                                break
                                     else:
                                         ps.state31(str(amount))
-                                        while True:
-                                            if GPIO.input(GIO_fps) == 1:
-                                                break
+                                        if fingerRemoved():
+                                            pass
                                 elif GPIO.input(GIO_back) == 0:
                                     ids.state10()
                                     break
@@ -279,18 +284,16 @@ try:
                                         print ("transr >>", transr)
                                         if transr[0] == 1:
                                             rs.state40(str(amount), str(transr[1]), str(fres[1]))
-                                            break
+                                            if fingerRemoved():
+                                                break
                                         else:
                                             rs.state31(amount) # "fatal" exeption to be handled
-                                            while True:
-                                                if GPIO.input(GIO_fps) == 1:
-                                                    break
-                                            fps.autoIdentifyStart()
+                                            if fingerRemoved():
+                                                fps.autoIdentifyStart()
                                     else:
                                         rs.state31(amount)
-                                        while True:
-                                            if GPIO.input(GIO_fps) == 1:
-                                                break
+                                        if fingerRemoved():
+                                            pass
                                 elif GPIO.input(GIO_back) == 0:
                                     ids.state10()
                                     break
