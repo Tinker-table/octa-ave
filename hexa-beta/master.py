@@ -59,7 +59,23 @@ def blink():
                 GPIO.output(8,False)
                 GPIO.output(11,False)
                 flagtime = time.time()
+
+def kbhit():
+    global key
+    try:
+        # keypress = 1
+        for event in device.read():
+            if event.type == evdev.ecodes.EV_KEY:
+                # keypress = 0
+                if event.code != 69:
+                    key = event.code
+                    kptime = event.timestamp()
+    except BlockingIOError:
+        continue
+    return time.time() - kptime < 0.05:
+
 state = 0
+key = 0
 try:
     global state
     device = evdev.InputDevice('/dev/input/event0')
@@ -149,17 +165,8 @@ try:
                 mss.currentState = 0
                 amount = ""
                 mobileNumber = ""
-        try:
-            # keypress = 1
-            for event in device.read():
-                if event.type == evdev.ecodes.EV_KEY:
-                    # keypress = 0
-                    if event.code != 69:
-                        key = event.code
-                        kptime = event.timestamp()
-        except BlockingIOError:
-            continue
-        if time.time() - kptime < 0.05:
+
+        if kbhit():
             x = kcode[key]
             print(key,ord(x),keypress)
             if keypress == 0:    
