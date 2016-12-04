@@ -161,11 +161,12 @@ try:
                 while True:
                     if GPIO.input(GIO_fps) == 1:
                         break
-                ids.state10()
-                state = 0
+                #ids.state10()
+                state = 5
                 mss.currentState = 0
                 amount = ""
                 mobileNumber = ""
+                screenTime = time.time()
 
         if kbhit():
             x = kcode[key]
