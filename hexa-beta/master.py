@@ -330,6 +330,15 @@ try:
                             if len(mobileNumber) == 10:
                                 if database.verifyMobileNumber(mobileNumber)[0] == 0:#.........number alerady exists
                                     urs.state61()
+                                    while True:
+                                        if kbhit():
+                                            if kcode[key] == '-' or ord(kcode[key]) == 13:
+                                                break
+                                    ids.state10()
+                                    state = 0
+                                    urs.currentState = 0
+                                    amount = ""
+                                    mobileNumber = ""
                                 else: #.......not existing
                                     while True:
                                         if fps.autoid == 0:
@@ -371,7 +380,17 @@ try:
                                                 else:
                                                     print("double registration ack failed")
                                             else:
+                                                urs.state41()
                                                 print("poda panni")
+                                                while True:
+                                                    if kbhit():
+                                                        if kcode[key] == '-' or ord(kcode[key]) == 13:
+                                                            break
+                                                ids.state10()
+                                                state = 0
+                                                urs.currentState = 0
+                                                amount = ""
+                                                mobileNumber = ""
                                         elif GPIO.input(GIO_back) == 0:
                                             ids.state10()
                                             state = 0
