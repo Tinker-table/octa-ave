@@ -14,12 +14,25 @@ import evdev
 import _thread
 
 def wrong_beep():
-    
     myPWM=GPIO.PWM(GIO_green, 100)
     myPWM.start(10)
     time.sleep(0.3)
     myPWM.stop(0)
     
+def ok_beep():
+    myPWM=GPIO.PWM(GIO_green, 10)
+    myPWM.start(50)
+    time.sleep(0.15)
+    myPWM.stop(0)
+
+def key_beep():
+    myPWM=GPIO.PWM(GIO_green, 10)
+    myPWM.start(20)
+    time.sleep(0.1)
+    myPWM.stop(0)
+
+
+
 
 def registermode():
     global state
@@ -86,7 +99,7 @@ def kbhit():
 def fingerRemoved():
     while True:
         if GPIO.input(GIO_fps) == 1:
-            _thread.start_new_thread( wrong_beep)
+            _thread.start_new_thread( ok_beep,())
             return True
 
 state = 0
