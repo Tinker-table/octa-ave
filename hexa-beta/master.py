@@ -11,7 +11,15 @@ import messageScreen as ms
 import time
 import binascii
 import evdev
+import _thread
 
+def wrong_beep():
+    
+    myPWM=GPIO.PWM(GIO_green, 100)
+    myPWM.start(10)
+    time.sleep(0.3)
+    myPWM.stop(0)
+    
 
 def registermode():
     global state
@@ -78,6 +86,7 @@ def kbhit():
 def fingerRemoved():
     while True:
         if GPIO.input(GIO_fps) == 1:
+            _thread.start_new_thread( wrong_beep)
             return True
 
 state = 0
@@ -140,6 +149,7 @@ try:
     GPIO.setup(GIO_fps, GPIO.IN, pull_up_down = GPIO.PUD_UP) # FPS Interrupt
     GPIO.setup(GIO_green,GPIO.OUT) #buzzer # now green
     GPIO.setup(GIO_red,GPIO.OUT) #red
+    GPIO.output(GIO_red,False)
 
     ids.state10()
 
