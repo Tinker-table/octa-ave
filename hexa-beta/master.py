@@ -202,12 +202,12 @@ try:
             x = kcode[key]
             print(key, ord(x), keypress)
             if keypress == 0:
-                _thread.start_new_thread( key_beep,())
+               # _thread.start_new_thread( key_beep,())
                 keypress = 1
                 keyclock = time.time()
                 print ("state > ", state)
                 if state == 0 or state == 5:
-                    _thread.start_new_thread( key_beep,())
+                    #_thread.start_new_thread( key_beep,())
                     if x == '1':
                         registermode()
                     elif x == '2':
@@ -485,7 +485,7 @@ try:
                             transr = database.trans(mobileNumber, int(amount), '+', 1001) # add money to account
                             print ("transr >>", transr)
                             if transr[0] == 1:
-                                _thread.start_new_thread( ok_beep,())
+                               # _thread.start_new_thread( ok_beep,())
                                 urs.state70(mobileNumber, str(database.getbal(mobileNumber)))  # parameters should be from database
                             else: # this state is not supposed to happen
                                 print('unexpected DB error')
