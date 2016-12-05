@@ -166,9 +166,9 @@ try:
 
     ids.state10()
 
-_thread.start_new_thread( ok_beep,())
-_thread.start_new_thread( ok_beep,())
-_thread.start_new_thread( ok_beep,())
+    _thread.start_new_thread( ok_beep,())
+    _thread.start_new_thread( ok_beep,())
+    _thread.start_new_thread( ok_beep,())
     while True:
         global state
         if GPIO.input(GIO_fps) == 0:
