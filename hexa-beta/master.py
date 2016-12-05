@@ -99,7 +99,7 @@ def kbhit():
 def fingerRemoved():
     while True:
         if GPIO.input(GIO_fps) == 1:
-            _thread.start_new_thread( ok_beep,())
+            #_thread.start_new_thread( ok_beep,())
             return True
 
 state = 0
@@ -166,7 +166,9 @@ try:
 
     ids.state10()
 
-
+_thread.start_new_thread( ok_beep,())
+_thread.start_new_thread( ok_beep,())
+_thread.start_new_thread( ok_beep,())
     while True:
         global state
         if GPIO.input(GIO_fps) == 0:
@@ -200,10 +202,12 @@ try:
             x = kcode[key]
             print(key, ord(x), keypress)
             if keypress == 0:
+                _thread.start_new_thread( key_beep,())
                 keypress = 1
                 keyclock = time.time()
                 print ("state > ", state)
                 if state == 0 or state == 5:
+                    _thread.start_new_thread( key_beep,())
                     if x == '1':
                         registermode()
                     elif x == '2':
@@ -213,6 +217,7 @@ try:
                     elif x == '-' or ord(x) == 13:
                         screenTime = 0
                 elif state == 3:
+                    _thread.start_new_thread( key_beep,())
                     print("3")
                     if ps.currentState == 10:
                         if x.isdigit() and len(amount) < 4:
@@ -241,19 +246,23 @@ try:
                                         fps.autoIdentifyStop()
                                         transr = database.trans(fres[1], int(amount), '-', 1001)
                                         if transr[0] == 1:
+                                            _thread.start_new_thread( ok_beep,())
                                             ps.state40(str(amount), str(fres[1]))
                                             if fingerRemoved():
                                                 break
                                         elif transr[0] == 2:
                                             ps.state31(str(amount))
+                                            _thread.start_new_thread( wrong_beep,())
                                             if fingerRemoved():
                                                 pass
                                             fps.autoIdentifyStart()
                                         elif transr[0] == 0:
+                                            _thread.start_new_thread( wrong_beep,())
                                             ps.state32(str(transr[1]))
                                             if fingerRemoved():
                                                 break
                                     else:
+                                        _thread.start_new_thread( wrong_beep,())
                                         ps.state31(str(amount))
                                         if fingerRemoved():
                                             pass
@@ -276,6 +285,7 @@ try:
 
 
                 elif state == 2:
+                    _thread.start_new_thread( key_beep,())
                     print("2")
                     if rs.currentState == 10:
                         if x.isdigit() and len(amount) < 4:
@@ -306,14 +316,17 @@ try:
                                         transr = database.trans(fres[1], int(amount), '+', 1001)
                                         print ("transr >>", transr)
                                         if transr[0] == 1:
+                                            _thread.start_new_thread( ok_beep,())
                                             rs.state40(str(amount), str(transr[1]), str(fres[1]))
                                             if fingerRemoved():
                                                 break
                                         else:
+                                            _thread.start_new_thread( wrong_beep,())
                                             rs.state31(amount) # "fatal" exeption to be handled
                                             if fingerRemoved():
                                                 fps.autoIdentifyStart()
                                     else:
+                                        _thread.start_new_thread( wrong_beep,())
                                         rs.state31(amount)
                                         if fingerRemoved():
                                             pass
@@ -337,6 +350,7 @@ try:
 
 
                 elif state == 1:
+                    _thread.start_new_thread( key_beep,())
                     print("1")
                     if urs.currentState == 40:
                         if x.isdigit() and len(mobileNumber) < 10:
@@ -359,6 +373,7 @@ try:
                         elif ord(x) == 13 or ord(x) == 10:
                             if len(mobileNumber) == 10:
                                 if database.verifyMobileNumber(mobileNumber)[0] == 0:#.........number alerady exists
+                                    _thread.start_new_thread( wrong_beep,())
                                     urs.state61()
                                     while True:
                                         if kbhit():
@@ -378,8 +393,10 @@ try:
                                         if GPIO.input(GIO_fps) == 0:
                                             if fps.identify()[0] == 0:
                                                 fps.autoIdentifyStop()
+                                                # _thread.start_new_thread( ok_beep,())
                                                 if True: # fps.doubleRegistration()[0] == 1:
                                                     if fps.initiateRegistration(mobileNumber)[0] == 1:
+                                                        _thread.start_new_thread( key_beep,())
                                                         urs.state101()
                                                         while True:
                                                             if GPIO.input(GIO_fps) == 1:
@@ -399,17 +416,21 @@ try:
                                                                 tempTwo =  binascii.unhexlify(tempdata[2])
                                                                 database.storeTemplate(mobileNumber, tempOne, tempTwo)
                                                                 database.registerUser (mobileNumber, 1001, 0)
+                                                                _thread.start_new_thread( ok_beep,())
                                                                 urs.state60()
                                                                 break
                                                             else:
                                                                 print ("template fetch error")
                                                         else:
+                                                            _thread.start_new_thread( wrong_beep,())
                                                             print("terminate reg failed")
                                                     else:
+                                                        _thread.start_new_thread( wrong_beep,())
                                                         print ("initiate reg failed")
                                                 else:
                                                     print("double registration ack failed")
                                             else:
+                                                _thread.start_new_thread( wrong_beep,())
                                                 urs.state41()
                                                 print("poda panni")
                                                 while True:
@@ -464,6 +485,7 @@ try:
                             transr = database.trans(mobileNumber, int(amount), '+', 1001) # add money to account
                             print ("transr >>", transr)
                             if transr[0] == 1:
+                                _thread.start_new_thread( ok_beep,())
                                 urs.state70(mobileNumber, str(database.getbal(mobileNumber)))  # parameters should be from database
                             else: # this state is not supposed to happen
                                 print('unexpected DB error')
