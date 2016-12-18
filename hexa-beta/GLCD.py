@@ -102,19 +102,22 @@ class LCD_GPIO(object):
             GPIO.output(self.D7, (value) & 0x80)
 
         # Toggle E
-        if(currentScreen == 0):
-#            print("cs0")
+        if True:#(currentScreen == 0):
+           # print("cs0"+",,,"+str(currentScreen))
             time.sleep(self.E_DELAY)
             GPIO.output(self.E1, True)
-            time.sleep(self.E_PULSE)
-            GPIO.output(self.E1, False)
-            time.sleep(self.E_DELAY)
-        elif(currentScreen == 1):
-            time.sleep(self.E_DELAY)
             GPIO.output(self.E2, True)
             time.sleep(self.E_PULSE)
+            GPIO.output(self.E1, False)
             GPIO.output(self.E2, False)
             time.sleep(self.E_DELAY)
+#        elif(currentScreen == 1):
+#            print("cs1")
+#            time.sleep(self.E_DELAY)
+#            GPIO.output(self.E2, True)
+#            time.sleep(self.E_PULSE)
+#            GPIO.output(self.E2, False)
+#            time.sleep(self.E_DELAY)
 
 
         # Waiting write operation complete by listening BUSY singal
@@ -169,16 +172,16 @@ class LCD12864(object):
              self.driver.lcd_byte(0x00,1)
 
     def lcd_init(self):
-        self.driver.useDisp1()
         currentScreen = 0
-        self.driver.lcd_byte(0x3F,0)
-        currentScreen = 1
+        self.driver.useDisp1()
         self.driver.lcd_byte(0x3F,0)
         self.driver.useDisp2()
-        currentScreen = 0
         self.driver.lcd_byte(0x3F,0)
         currentScreen = 1
+        self.driver.useDisp1()
         self.driver.lcd_byte(0x3F,0)
+        self.driver.useDisp2()
+        self.driver.lcd_byte(0x3F,0)        
 
 driver = LCD_GPIO(RS=4,RW=17,E1=27,E2=7,D0=22,D1=10,D2=9,D3=11,D4=5,D5=6,D6=13,D7=19,CS1=26,CS2=21,RST=20)
 lcd = LCD12864(driver=driver)
@@ -229,8 +232,8 @@ def clearDisplay(screen):
 if __name__ == "__main__":
     clearDisplay(0)
     print("hi")
-    displayText("{:^21}".format("Project Hexa"),3,1,0)
-    displayText("{:^21}".format(" Welcomes You!! "),4,1,0)
+   # displayText("{:^21}".format("Project Hexa"),3,1,0)
+   # displayText("{:^21}".format(" Welcomes You!! "),4,1,0)
     clearDisplay(1)
     displayText("{:^21}".format("Project Hexa"),3,1,1)
     displayText("{:^21}".format(" Welcomes You!! "),4,1,1)

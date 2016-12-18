@@ -1,0 +1,5 @@
+*.pyc
+*\__pycache__\
+\hexa-beta\transid.dat
+\hexa-beta\hexabeta.db
+\local

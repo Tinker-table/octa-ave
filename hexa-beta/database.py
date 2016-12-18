@@ -70,7 +70,7 @@ def registerUser (MobileNumber, VendorId, AccountBalance = 0):
     conn.commit()
     print("Records created successfully")
 
-def trans(MobileNumber,Amount,TransactionType, VendorId):
+def trans(MobileNumber, Amount, TransactionType, VendorId):
     if verifyMobileNumber(MobileNumber)[0] == 1:
         return 2, 0  # account not found in db
     currentBalance=getbal(MobileNumber)
@@ -173,6 +173,34 @@ def verifyMobileNumber(mobileNumber):
             # print("yay",e)
         else:
             print("unexpected behavior")
+
+
+def cleardb():
+    print('Warning!!! this will clear all your data... \n please make a backup... \n\n \n please type "7345 DB Clear" to continue... ')
+    if input() == '7345 DB Clear':
+        print('clearing DB Now...')
+        cursor = conn.execute("DELETE FROM CustomerDetails")
+        cursor = conn.execute("DELETE FROM TransactionLogs")
+        cursor = conn.execute("DELETE FROM VendorLogs")
+        cursor = conn.execute("DELETE FROM VendorDetails")
+        cursor = conn.execute("DELETE FROM VendingUserDetails")
+        cursor = conn.execute("DELETE FROM FPTemplatedb")
+        if (os.path.isfile("transid.dat")):
+            fo = open("transid.dat", "rb+")
+            tid = 0
+            fo.truncate()
+            fo.write(bytes(str(tid), 'UTF-8'))
+        else:
+            fo = open("transid.dat", "ab")
+            tid = 0
+            fo.write(bytes(str(tid), 'UTF-8'))
+        fo.close()
+
+        print('all clear...')
+    else:
+        print('no action taken...')
+        return
+
 
 
 #createtables()

@@ -6,9 +6,32 @@ import miniStatementScreen as mss
 import rechargeScreen as rs
 import paymentScreen as ps
 import userRegistrationScreen as urs
-import kbh
+#import kbh
+import messageScreen as ms
 import time
 import binascii
+import evdev
+import _thread
+
+def wrong_beep():
+    myPWM=GPIO.PWM(GIO_green, 100)
+    myPWM.start(10)
+    time.sleep(0.3)
+    myPWM.stop(0)
+    
+def ok_beep():
+    myPWM=GPIO.PWM(GIO_green, 10)
+    myPWM.start(50)
+    time.sleep(0.15)
+    myPWM.stop(0)
+
+def key_beep():
+    myPWM=GPIO.PWM(GIO_green, 10)
+    myPWM.start(20)
+    time.sleep(0.1)
+    myPWM.stop(0)
+
+
 
 
 def registermode():
@@ -46,7 +69,7 @@ def blink():
     global flagtime
     flagtime = time.time()
     while True:
-        if kb.kbhit() or GPIO.input(4) == 0 or GPIO.input(9) == 0 or GPIO.input(27) == 0 or GPIO.input(10) == 0 or GPIO.input(17) == 0:
+        if kb.kbhit() or GPIO.input(GIO_fps) == 0 or GPIO.input(GIO_back) == 0 or GPIO.input(GIO_pay) == 0 or GPIO.input(GIO_rech) == 0 or GPIO.input(GIO_reg) == 0:
             break
         else:
             GPIO.output(8,True)
@@ -58,7 +81,39 @@ def blink():
                 GPIO.output(11,False)
                 flagtime = time.time()
 
+kptime = 0
+def kbhit():
+    global key
+    global kptime
+    try:
+        # keypress = 1
+        for event in device.read():
+            if event.type == evdev.ecodes.EV_KEY:
+                # keypress = 0
+                if event.code != 69:
+                    key = event.code
+                    kptime = event.timestamp()
+    except BlockingIOError:
+        return time.time() - kptime < 0.05
+
+def fingerRemoved():
+    while True:
+        if GPIO.input(GIO_fps) == 1:
+            #_thread.start_new_thread( ok_beep,())
+            return True
+
+state = 0
+key = 0
 try:
+    global state
+    device = evdev.InputDevice('/dev/input/event0')
+    GIO_reg = 23
+    GIO_rech = 24
+    GIO_pay = 25
+    GIO_back = 8
+    GIO_fps = 18
+    GIO_green = 12
+    GIO_red = 16
     keyclock = 0
     keypress = 0
     fps.autoIdentifyStop()
@@ -67,7 +122,6 @@ try:
     amount = ""
     fingerRegistrationGo = 0
     screenTime = 0
-    state = 0
     flagtime = 0
     # state 0 - idle_Screen mode
     # state 1 - registration mode
@@ -75,26 +129,49 @@ try:
     # state 3 - payment mode
     # state 4 - ministatement mode
     # state 5 - screen waiting
+    kptime = time.time()-5
+    kcode = {
+        82:'0',
+        79:'1',
+        80:'2',
+        81:'3',
+        75:'4',
+        76:'5',
+        77:'6',
+        71:'7',
+        72:'8',
+        73:'9',
+        83:'.',
+        96:chr(13),
+        #96:'2',
+        14:chr(127),
+        78:'+',
+        74:'-',
+        55:'*',
+        98:'/'
+        }
 
-
-    kb = kbh.KBHit()
+    #kb = kbh.KBHit()
 
 
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(23, GPIO.IN, pull_up_down = GPIO.PUD_UP) # register
-    GPIO.setup(24, GPIO.IN, pull_up_down = GPIO.PUD_UP) # recharge
-    GPIO.setup(25, GPIO.IN, pull_up_down = GPIO.PUD_UP) # payment
-    GPIO.setup(8, GPIO.IN, pull_up_down = GPIO.PUD_UP) # back
-    GPIO.setup(18, GPIO.IN, pull_up_down = GPIO.PUD_UP) # FPS Interrupt
-    GPIO.setup(12,GPIO.OUT) #buzzer # now green
-    GPIO.setup(16,GPIO.OUT) #red
+    GPIO.setup(GIO_reg, GPIO.IN, pull_up_down = GPIO.PUD_UP) # register
+    GPIO.setup(GIO_rech, GPIO.IN, pull_up_down = GPIO.PUD_UP) # recharge
+    GPIO.setup(GIO_pay, GPIO.IN, pull_up_down = GPIO.PUD_UP) # payment
+    GPIO.setup(GIO_back, GPIO.IN, pull_up_down = GPIO.PUD_UP) # back
+    GPIO.setup(GIO_fps, GPIO.IN, pull_up_down = GPIO.PUD_UP) # FPS Interrupt
+    GPIO.setup(GIO_green,GPIO.OUT) #buzzer # now green
+    GPIO.setup(GIO_red,GPIO.OUT) #red
+    GPIO.output(GIO_red,False)
 
     ids.state10()
 
-
+    _thread.start_new_thread( ok_beep,())
+    _thread.start_new_thread( ok_beep,())
+    _thread.start_new_thread( ok_beep,())
     while True:
         global state
-        if GPIO.input(4) == 0:
+        if GPIO.input(GIO_fps) == 0:
             if state == 0 or state == 5:
                 miniStatementmode()
             elif state == 4:
@@ -112,27 +189,35 @@ try:
                     print ("FPS not found")
                     mss.state21()
                 while True:
-                    if GPIO.input(4) == 1:
+                    if GPIO.input(GIO_fps) == 1:
                         break
-                ids.state10()
-                state = 0
+                #ids.state10()
+                state = 5
                 mss.currentState = 0
                 amount = ""
                 mobileNumber = ""
-        if kb.kbhit():
-            keyclock = time.time()
-            x = kb.getch()
+                screenTime = time.time()
+
+        if kbhit():
+            x = kcode[key]
+            print(key, ord(x), keypress)
             if keypress == 0:
+               # _thread.start_new_thread( key_beep,())
                 keypress = 1
+                keyclock = time.time()
                 print ("state > ", state)
                 if state == 0 or state == 5:
+                    #_thread.start_new_thread( key_beep,())
                     if x == '1':
                         registermode()
                     elif x == '2':
                         rechargemode()
                     elif x == '3':
                         paymentmode()
+                    elif x == '-' or ord(x) == 13:
+                        screenTime = 0
                 elif state == 3:
+                    _thread.start_new_thread( key_beep,())
                     print("3")
                     if ps.currentState == 10:
                         if x.isdigit() and len(amount) < 4:
@@ -142,11 +227,18 @@ try:
                             alen = len(amount)
                             amount = amount[0:alen - 1]
                             ps.state10(amount)
-                        elif ord(x) == 13 or ord(x) == 10:
+                        elif x == "-":
+                            ids.state10()
+                            state = 5
+                            ps.currentState = 0
+                            amount = ""
+                            mobileNumber = ""
+                            screenTime = time.time() + 5
+                        elif (ord(x) == 13 or ord(x) == 10) and len(amount) > 0:
                             ps.state20(amount)
                             fps.autoIdentifyStart()
                             while True:
-                                if GPIO.input(4) == 0:
+                                if GPIO.input(GIO_fps) == 0:
                                     print("fps interrupt in payment mode")
                                     ps.state30()
                                     fres = fps.identify()
@@ -154,24 +246,34 @@ try:
                                         fps.autoIdentifyStop()
                                         transr = database.trans(fres[1], int(amount), '-', 1001)
                                         if transr[0] == 1:
-                                            ps.state40(str(amount))
+                                            _thread.start_new_thread( ok_beep,())
+                                            ps.state40(str(amount), str(fres[1]))
+                                            if fingerRemoved():
+                                                break
                                         elif transr[0] == 2:
                                             ps.state31(str(amount))
-                                            while True:
-                                                if GPIO.input(4) == 1:
-                                                    break
+                                            _thread.start_new_thread( wrong_beep,())
+                                            if fingerRemoved():
+                                                pass
                                             fps.autoIdentifyStart()
-                                        else:
+                                        elif transr[0] == 0:
+                                            _thread.start_new_thread( wrong_beep,())
                                             ps.state32(str(transr[1]))
-                                        break
-                                    else:
-                                        ps.state31(str(amount))
-                                        while True:
-                                            if GPIO.input(4) == 1:
+                                            if fingerRemoved():
                                                 break
-                                elif GPIO.input(9) == 0:
+                                    else:
+                                        _thread.start_new_thread( wrong_beep,())
+                                        ps.state31(str(amount))
+                                        if fingerRemoved():
+                                            pass
+                                elif GPIO.input(GIO_back) == 0:
                                     ids.state10()
                                     break
+                                elif kbhit():
+                                    if kcode[key] == '-':  # back
+                                        ids.state10()
+                                        break
+
                             state = 5
                             ps.currentState = 0
                             amount = ""
@@ -183,6 +285,7 @@ try:
 
 
                 elif state == 2:
+                    _thread.start_new_thread( key_beep,())
                     print("2")
                     if rs.currentState == 10:
                         if x.isdigit() and len(amount) < 4:
@@ -192,11 +295,18 @@ try:
                             alen = len(amount)
                             amount = amount[0:alen - 1]
                             rs.state10(amount)
-                        elif ord(x) == 13 or ord(x) == 10:
+                        elif x == "-":
+                            ids.state10()
+                            state = 5
+                            rs.currentState = 0
+                            amount = ""
+                            mobileNumber = ""
+                            screenTime = time.time() + 5
+                        elif (ord(x) == 13 or ord(x) == 10) and len(amount) > 0:
                             rs.state20(amount)
                             fps.autoIdentifyStart()
                             while True:
-                                if GPIO.input(4) == 0:
+                                if GPIO.input(GIO_fps) == 0:
                                     print("fps interrupt in recharge mode")
                                     rs.state30()
                                     fres = fps.identify()
@@ -206,22 +316,27 @@ try:
                                         transr = database.trans(fres[1], int(amount), '+', 1001)
                                         print ("transr >>", transr)
                                         if transr[0] == 1:
-                                            rs.state40(str(amount), str(transr[1]))
-                                            break
-                                        else:
-                                            rs.state31(amount) # "fatal" exeption to be handled
-                                            while True:
-                                                if GPIO.input(4) == 1:
-                                                    break
-                                            fps.autoIdentifyStart()
-                                    else:
-                                        rs.state31(amount)
-                                        while True:
-                                            if GPIO.input(4) == 1:
+                                            _thread.start_new_thread( ok_beep,())
+                                            rs.state40(str(amount), str(transr[1]), str(fres[1]))
+                                            if fingerRemoved():
                                                 break
-                                elif GPIO.input(9) == 0:
+                                        else:
+                                            _thread.start_new_thread( wrong_beep,())
+                                            rs.state31(amount) # "fatal" exeption to be handled
+                                            if fingerRemoved():
+                                                fps.autoIdentifyStart()
+                                    else:
+                                        _thread.start_new_thread( wrong_beep,())
+                                        rs.state31(amount)
+                                        if fingerRemoved():
+                                            pass
+                                elif GPIO.input(GIO_back) == 0:
                                     ids.state10()
                                     break
+                                elif kbhit():
+                                    if kcode[key] == '-':  # back
+                                        ids.state10()
+                                        break
                             state = 5
                             rs.currentState = 0
                             amount = ""
@@ -235,6 +350,7 @@ try:
 
 
                 elif state == 1:
+                    _thread.start_new_thread( key_beep,())
                     print("1")
                     if urs.currentState == 40:
                         if x.isdigit() and len(mobileNumber) < 10:
@@ -247,28 +363,51 @@ try:
                             mobileNumber = mobileNumber[0:mlen-1]
                             print("backspace end>>", len(mobileNumber))
                             urs.state40(mobileNumber)
+                        elif x == "-":
+                            ids.state10()
+                            state = 0
+                            urs.currentState = 0
+                            amount = ""
+                            mobileNumber = ""
+
                         elif ord(x) == 13 or ord(x) == 10:
                             if len(mobileNumber) == 10:
                                 if database.verifyMobileNumber(mobileNumber)[0] == 0:#.........number alerady exists
+                                    _thread.start_new_thread( wrong_beep,())
                                     urs.state61()
+                                    while True:
+                                        if kbhit():
+                                            if kcode[key] == '-' or ord(kcode[key]) == 13:
+                                                break
+                                    ids.state10()
+                                    state = 0
+                                    urs.currentState = 0
+                                    amount = ""
+                                    mobileNumber = ""
                                 else: #.......not existing
                                     while True:
                                         if fps.autoid == 0:
                                             fps.autoIdentifyStart()
                                         if urs.currentState != 100:
                                             urs.state100()
-                                        if GPIO.input(4) == 0:
+                                        if GPIO.input(GIO_fps) == 0:
                                             if fps.identify()[0] == 0:
                                                 fps.autoIdentifyStop()
-                                                if fps.doubleRegistration()[0] == 1:
+                                                # _thread.start_new_thread( ok_beep,())
+                                                if True: # fps.doubleRegistration()[0] == 1:
                                                     if fps.initiateRegistration(mobileNumber)[0] == 1:
+                                                        _thread.start_new_thread( key_beep,())
                                                         urs.state101()
                                                         while True:
-                                                            if GPIO.input(4) == 1:
+                                                            if GPIO.input(GIO_fps) == 1:
                                                                 break
                                                         while True:
-                                                            if GPIO.input(4) == 0:
+                                                            if GPIO.input(GIO_fps) == 0:
                                                                 break
+                                                            # elif kbhit():
+                                                            #     if ord(x) == 127:  # backspace
+                                                            #         ids.state10()
+                                                                    
                                                         if fps.terminateRegistration()[0] == 1:
                                                             urs.state50()
                                                             tempdata = fps.getTemplateGenerator(mobileNumber)
@@ -276,26 +415,52 @@ try:
                                                                 tempOne =  binascii.unhexlify(tempdata[1])
                                                                 tempTwo =  binascii.unhexlify(tempdata[2])
                                                                 database.storeTemplate(mobileNumber, tempOne, tempTwo)
+                                                                database.registerUser (mobileNumber, 1001, 0)
+                                                                _thread.start_new_thread( ok_beep,())
                                                                 urs.state60()
                                                                 break
                                                             else:
                                                                 print ("template fetch error")
                                                         else:
+                                                            _thread.start_new_thread( wrong_beep,())
                                                             print("terminate reg failed")
                                                     else:
+                                                        _thread.start_new_thread( wrong_beep,())
                                                         print ("initiate reg failed")
                                                 else:
                                                     print("double registration ack failed")
                                             else:
+                                                _thread.start_new_thread( wrong_beep,())
+                                                urs.state41()
                                                 print("poda panni")
-                                        elif GPIO.input(9) == 0:
+                                                while True:
+                                                    if kbhit():
+                                                        if kcode[key] == '-' or ord(kcode[key]) == 13:
+                                                            break
+                                                ids.state10()
+                                                state = 0
+                                                urs.currentState = 0
+                                                amount = ""
+                                                mobileNumber = ""
+                                                break
+                                        elif GPIO.input(GIO_back) == 0:
                                             ids.state10()
                                             state = 0
-                                            mss.currentState = 0
+                                            urs.currentState = 0
                                             amount = ""
                                             mobileNumber = ""
                                             fps.autoIdentifyStop()
                                             break
+                                        elif kbhit():
+                                            if kcode[key] == '-':
+                                                ids.state10()
+                                                state = 0
+                                                urs.currentState = 0
+                                                amount = ""
+                                                mobileNumber = ""
+                                                fps.autoIdentifyStop()
+                                                break
+
 
 
                     if urs.currentState == 61:
@@ -309,9 +474,21 @@ try:
                         elif ord(x) == 127:  # backspace
                             amount = amount[0:len(amount) - 1]
                             urs.state60(amount)
+                        elif x == "-":
+                            urs.state70(mobileNumber, str(database.getbal(mobileNumber)))
+                            urs.currentState = 0
+                            amount = ""
+                            mobileNumber = ""
+                            state = 5
+                            screenTime = time.time()
                         elif (ord(x) == 13 or ord(x) == 10) and len(amount) > 0:
-                            database.registerUser (mobileNumber, 1001, int(amount)) # add money to account
-                            urs.state70(mobileNumber, str(database.getbal(mobileNumber)))  # parameters should be from database
+                            transr = database.trans(mobileNumber, int(amount), '+', 1001) # add money to account
+                            print ("transr >>", transr)
+                            if transr[0] == 1:
+                               # _thread.start_new_thread( ok_beep,())
+                                urs.state70(mobileNumber, str(database.getbal(mobileNumber)))  # parameters should be from database
+                            else: # this state is not supposed to happen
+                                print('unexpected DB error')
                             urs.currentState = 0
                             amount = ""
                             mobileNumber = ""
@@ -320,22 +497,22 @@ try:
 
 
 
-        elif GPIO.input(17) == 0:
+        elif GPIO.input(GIO_reg) == 0:
             if state == 0 or state == 5:
                 registermode()
 
 
-        elif GPIO.input(10) == 0:
+        elif GPIO.input(GIO_rech) == 0:
             if state == 0 or state == 5:
                 rechargemode()
 
 
-        elif GPIO.input(27) == 0:
+        elif GPIO.input(GIO_pay) == 0:
             if state == 0 or state == 5:
                 paymentmode()
 
 
-        elif GPIO.input(9) == 0:
+        elif GPIO.input(GIO_back) == 0:
             print('back')
             if state == 1:
                 if urs.currentState == 40:
@@ -355,9 +532,11 @@ try:
 
 
         else:
-            if (time.time() - keyclock > 0.1) and keyclock != 0:
-                keypress = 0
-                keyclock = 0
+            pass
+        if (time.time() - keyclock > 0.30) and keyclock != 0 and keypress == 1:
+            keypress = 0
+            keyclock = 0
+            print('is now zero')
 
 
         if state == 0 or state == 5:
@@ -380,7 +559,8 @@ try:
 
 
 finally:
+    ms.msg('Exited Program!!!')
     database.conn.close()
-    database.cursor.close()
+    #database.cursor.close()
     GPIO.cleanup()
     fps.serialport.close()
