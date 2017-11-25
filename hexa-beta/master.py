@@ -6,7 +6,12 @@ import miniStatementScreen as mss
 import rechargeScreen as rs
 import paymentScreen as ps
 import userRegistrationScreen as urs
+<<<<<<< HEAD
 #import kbh
+=======
+import messageScreen as ms
+import kbh
+>>>>>>> 88d2df97f74c99467e284e6679a2892c78e39841
 import time
 import binascii
 import evdev
@@ -194,7 +199,7 @@ try:
                                         fps.autoIdentifyStop()
                                         transr = database.trans(fres[1], int(amount), '-', 1001)
                                         if transr[0] == 1:
-                                            ps.state40(str(amount))
+                                            ps.state40(str(amount),str(fres[1]))
                                         elif transr[0] == 2:
                                             ps.state31(str(amount))
                                             while True:
@@ -246,7 +251,7 @@ try:
                                         transr = database.trans(fres[1], int(amount), '+', 1001)
                                         print ("transr >>", transr)
                                         if transr[0] == 1:
-                                            rs.state40(str(amount), str(transr[1]))
+                                            rs.state40(str(amount), str(transr[1]),str(fres[1]))
                                             break
                                         else:
                                             rs.state31(amount) # "fatal" exeption to be handled
@@ -300,7 +305,7 @@ try:
                                         if GPIO.input(GIO_fps) == 0:
                                             if fps.identify()[0] == 0:
                                                 fps.autoIdentifyStop()
-                                                if fps.doubleRegistration()[0] == 1:
+                                                if True: # fps.doubleRegistration()[0] == 1:
                                                     if fps.initiateRegistration(mobileNumber)[0] == 1:
                                                         urs.state101()
                                                         while True:
@@ -422,6 +427,7 @@ try:
 
 
 finally:
+    ms.msg('Exited Program!!!')
     database.conn.close()
     #database.cursor.close()
     GPIO.cleanup()

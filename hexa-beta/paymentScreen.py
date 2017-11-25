@@ -141,24 +141,29 @@ def state32(currentBalance = " "):
 
 
 
-def state40(paymentAmount = " "):
+def state40(paymentAmount = " ",mobileNumber = " "):
     global currentState
     currentState = 40
     #vendor Screen
     g.clearDisplay(0)
     string = ("{:^%d}" % lineLength).format("Payment Successful")
-    g.displayText(string,2,0,0)
+    g.displayText(string,0,0,0)
     string = ("{:<%d}" % lineLength).format("Rs.")
-    g.displayText(string,3,0,0)
+    g.displayText(string,1,0,0)
     g.displayText(paymentAmount,3,(3*fontWidth-1),0)
+    string = ("{:^%d}" % lineLength).format("Mobile Number:")
+    g.displayText(string,2,0,0)
+    g.displayText(mobileNumber,3,0,0)
 
 
     #user Screen
     g.clearDisplay(1)
     string = ("{:^%d}" % lineLength).format("Payment Successful")
-    g.displayText(string,2,0,1)
+    g.displayText(string,0,0,1)
     string = ("{:<%d}" % lineLength).format("Rs.")
-    g.displayText(string,3,0,1)
+    g.displayText(string,1,0,1)
     g.displayText(paymentAmount,3,(3*fontWidth-1),1)
-
+    string = ("{:^%d}" % lineLength).format("Mobile Number:")
+    g.displayText(string,2,0,1)
+    g.displayText(mobileNumber,3,0,1)
 
