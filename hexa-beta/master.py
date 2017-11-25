@@ -6,9 +6,10 @@ import miniStatementScreen as mss
 import rechargeScreen as rs
 import paymentScreen as ps
 import userRegistrationScreen as urs
-import kbh
+#import kbh
 import time
 import binascii
+import evdev
 
 
 def registermode():
@@ -57,8 +58,10 @@ def blink():
                 GPIO.output(8,False)
                 GPIO.output(11,False)
                 flagtime = time.time()
-
+state = 0
 try:
+    global state
+    device = evdev.InputDevice('/dev/input/event0')
     GIO_reg = 23
     GIO_rech = 24
     GIO_pay = 25
@@ -74,7 +77,6 @@ try:
     amount = ""
     fingerRegistrationGo = 0
     screenTime = 0
-    state = 0
     flagtime = 0
     # state 0 - idle_Screen mode
     # state 1 - registration mode
@@ -82,9 +84,29 @@ try:
     # state 3 - payment mode
     # state 4 - ministatement mode
     # state 5 - screen waiting
+    kptime = time.time()-5
+    kcode = {
+        82:'0',
+        79:'1',
+        80:'2',
+        81:'3',
+        75:'4',
+        76:'5',
+        77:'6',
+        71:'7',
+        72:'8',
+        73:'9',
+        83:'.',
+        96:chr(13),
+        #96:'2',
+        14:chr(127),
+        78:'+',
+        74:'-',
+        55:'*',
+        98:'/'
+        }
 
-
-    kb = kbh.KBHit()
+    #kb = kbh.KBHit()
 
 
     GPIO.setmode(GPIO.BCM)
@@ -126,11 +148,22 @@ try:
                 mss.currentState = 0
                 amount = ""
                 mobileNumber = ""
-        if kb.kbhit():
-            keyclock = time.time()
-            x = kb.getch()
-            if keypress == 0:
+        try:
+            # keypress = 1
+            for event in device.read():
+                if event.type == evdev.ecodes.EV_KEY:
+                    # keypress = 0
+                    if event.code != 69:
+                        key = event.code
+                        kptime = event.timestamp()
+        except BlockingIOError:
+            continue
+        if time.time() - kptime < 0.05:
+            x = kcode[key]
+            print(key,ord(x),keypress)
+            if keypress == 0:    
                 keypress = 1
+                keyclock = time.time()
                 print ("state > ", state)
                 if state == 0 or state == 5:
                     if x == '1':
@@ -362,9 +395,11 @@ try:
 
 
         else:
-            if (time.time() - keyclock > 0.1) and keyclock != 0:
-                keypress = 0
-                keyclock = 0
+            pass
+        if (time.time() - keyclock > 0.30) and keyclock != 0 and keypress == 1:
+            keypress = 0
+            keyclock = 0
+            print('is now zero')
 
 
         if state == 0 or state == 5:
